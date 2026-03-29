@@ -100,7 +100,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+      <section id="home" className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <img 
             src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85" 
@@ -455,19 +455,37 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl h-[500px] lg:h-auto"
+              className="flex flex-col gap-6"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80" 
-                alt="Salon Location" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-foreground/30" />
-              <div className="absolute bottom-8 left-8 right-8 glass-panel p-8 rounded-2xl text-foreground">
-                <h4 className="text-2xl font-serif font-bold mb-4">Visit Us</h4>
-                <p className="flex items-center gap-3 mb-3 text-muted-foreground"><MapPin className="w-5 h-5 text-primary shrink-0" /> 14, MG Road, Koramangala, Bengaluru, Karnataka 560034</p>
-                <p className="flex items-center gap-3 mb-3 text-muted-foreground"><Phone className="w-5 h-5 text-primary shrink-0" /> +91 98765 43210</p>
-                <p className="flex items-center gap-3 text-muted-foreground"><Clock className="w-5 h-5 text-primary shrink-0" /> Mon-Sat: 10:00 AM – 8:00 PM | Sun: Closed</p>
+              {/* Google Maps Embed — Vijayawada, India */}
+              <div className="rounded-3xl overflow-hidden shadow-2xl border border-border/40" style={{ height: 320 }}>
+                <iframe
+                  title="Glow Salon Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60989.836069862406!2d80.57628471406295!3d16.50694956521849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35eff9db021f25%3A0xb96b0e8d1e98c16e!2sVijayawada%2C%20Andhra%20Pradesh!5e0!3m2!1sen!2sin!4v1695000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+
+              {/* Location Info Card */}
+              <div className="bg-card rounded-2xl p-6 border border-border shadow-sm space-y-4">
+                <h4 className="text-xl font-serif font-bold text-foreground mb-2">Visit Us</h4>
+                <p className="flex items-start gap-3 text-muted-foreground text-sm">
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>14, MG Road, Koramangala, Vijayawada, Andhra Pradesh 520001</span>
+                </p>
+                <p className="flex items-center gap-3 text-muted-foreground text-sm">
+                  <Phone className="w-5 h-5 text-primary shrink-0" />
+                  <a href="tel:+919876543210" className="hover:text-primary transition-colors">+91 98765 43210</a>
+                </p>
+                <p className="flex items-center gap-3 text-muted-foreground text-sm">
+                  <Clock className="w-5 h-5 text-primary shrink-0" />
+                  <span>Mon–Sat: 10:00 AM – 8:00 PM &nbsp;|&nbsp; Sun: Closed</span>
+                </p>
               </div>
             </motion.div>
           </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
-import { Calendar as CalendarIcon, Clock, CheckCircle2, ChevronLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar as CalendarIcon, Clock, CheckCircle2, ChevronLeft, Sparkles, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -85,34 +85,6 @@ export default function Booking() {
     return `${hour}:${minuteStr} ${ampm}`;
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="pt-32 pb-24 max-w-3xl mx-auto px-4 text-center">
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-card p-12 rounded-3xl border border-border shadow-xl"
-          >
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8">
-              <CheckCircle2 className="w-12 h-12 text-primary" />
-            </div>
-            <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Appointment Confirmed!</h1>
-            <p className="text-muted-foreground text-lg mb-8">
-              Your appointment has been successfully booked! We will confirm via WhatsApp/SMS.
-            </p>
-            <button 
-              onClick={() => setLocation("/")}
-              className="px-8 py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-            >
-              Return Home
-            </button>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -373,6 +345,76 @@ export default function Booking() {
           </form>
         </div>
       </div>
+
+      {/* Booking Confirmation Popup */}
+      <AnimatePresence>
+        {success && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-card rounded-3xl p-10 max-w-md w-full shadow-2xl border border-border text-center relative"
+            >
+              <button
+                onClick={() => setSuccess(false)}
+                className="absolute top-4 right-4 p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Animated check circle */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.1, type: "spring", stiffness: 400, damping: 20 }}
+                className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <CheckCircle2 className="w-12 h-12 text-primary" />
+              </motion.div>
+
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-secondary" />
+                <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Booking Confirmed</span>
+                <Sparkles className="w-5 h-5 text-secondary" />
+              </div>
+
+              <h2 className="text-3xl font-serif font-bold text-foreground mb-3">
+                You're all set!
+              </h2>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Your appointment at <span className="font-semibold text-foreground">Glow Salon</span> has been booked successfully. We'll send a confirmation on WhatsApp and SMS shortly.
+              </p>
+
+              <div className="bg-muted/50 rounded-2xl p-4 mb-8 text-sm text-muted-foreground border border-border/50">
+                📍 14, MG Road, Vijayawada &nbsp;•&nbsp; 📞 +91 98765 43210
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setSuccess(false); }}
+                  className="flex-1 py-3 border border-border rounded-xl text-foreground font-medium hover:bg-muted transition-colors"
+                >
+                  Book Another
+                </button>
+                <button
+                  onClick={() => setLocation("/")}
+                  className="flex-1 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                >
+                  Return Home
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
