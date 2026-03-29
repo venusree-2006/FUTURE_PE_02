@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Instagram, Facebook, Twitter, MapPin, Phone, Mail, Sparkles } from "lucide-react";
+import { Instagram, Facebook, Twitter, MapPin, Phone, Mail, Sparkles, MessageCircle } from "lucide-react";
 
 export function Footer() {
   return (
@@ -22,6 +22,9 @@ export function Footer() {
                 <Facebook className="w-4 h-4" />
               </a>
               <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-secondary hover:border-secondary hover:text-white transition-all duration-300">
+                <MessageCircle className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-secondary hover:border-secondary hover:text-white transition-all duration-300">
                 <Twitter className="w-4 h-4" />
               </a>
             </div>
@@ -40,8 +43,7 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-serif font-semibold text-white mb-6">Opening Hours</h4>
             <ul className="space-y-3 text-sm text-white/60">
-              <li className="flex justify-between"><span>Monday - Friday</span> <span>9:00 AM - 8:00 PM</span></li>
-              <li className="flex justify-between"><span>Saturday</span> <span>10:00 AM - 6:00 PM</span></li>
+              <li className="flex justify-between"><span>Monday - Saturday</span> <span>10:00 AM - 8:00 PM</span></li>
               <li className="flex justify-between"><span>Sunday</span> <span>Closed</span></li>
             </ul>
           </div>
@@ -51,15 +53,15 @@ export function Footer() {
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-secondary shrink-0" />
-                <span className="text-white/60">123 Luxury Avenue, Beverly Hills, CA 90210</span>
+                <span className="text-white/60">14, MG Road, Koramangala, Bengaluru, Karnataka 560034</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-secondary shrink-0" />
-                <span className="text-white/60">+1 (555) 123-4567</span>
+                <span className="text-white/60">+91 98765 43210</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-secondary shrink-0" />
-                <span className="text-white/60">hello@glowsalon.com</span>
+                <span className="text-white/60">hello@glowsalon.in</span>
               </li>
             </ul>
           </div>

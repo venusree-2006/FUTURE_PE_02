@@ -14,7 +14,7 @@ const bookingSchema = z.object({
   serviceId: z.coerce.number().min(1, "Please select a service"),
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Valid phone number is required"),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter valid 10-digit Indian mobile number"),
   date: z.string().min(1, "Please select a date"),
   time: z.string().min(1, "Please select a time"),
   notes: z.string().optional()
@@ -74,7 +74,16 @@ export default function Booking() {
     return d;
   }).filter(Boolean) as Date[];
 
-  const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+  const timeSlots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+
+  const formatTime = (time: string) => {
+    const [hourStr, minuteStr] = time.split(':');
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    hour = hour ? hour : 12; // the hour '0' should be '12'
+    return `${hour}:${minuteStr} ${ampm}`;
+  };
 
   if (success) {
     return (
@@ -91,7 +100,7 @@ export default function Booking() {
             </div>
             <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Appointment Confirmed!</h1>
             <p className="text-muted-foreground text-lg mb-8">
-              Thank you for booking with Glow Salon. We've sent a confirmation email with your appointment details. We look forward to seeing you.
+              Your appointment has been successfully booked! We will confirm via WhatsApp/SMS.
             </p>
             <button 
               onClick={() => setLocation("/")}
@@ -164,7 +173,7 @@ export default function Booking() {
                             <span className="capitalize">{service.category}</span>
                           </div>
                         </div>
-                        <div className="text-xl font-medium text-primary">${service.price}</div>
+                        <div className="text-xl font-medium text-primary">₹{Number(service.price).toLocaleString('en-IN')}</div>
                       </div>
                     ))}
                     {form.formState.errors.serviceId && (
@@ -245,7 +254,7 @@ export default function Booking() {
                                 : "bg-background border-border text-foreground hover:border-primary/50"
                             }`}
                           >
-                            {time}
+                            {formatTime(time)}
                           </button>
                         );
                       })}
@@ -298,7 +307,7 @@ export default function Booking() {
                         <input 
                           {...form.register("phone")}
                           className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="+91 XXXXX XXXXX"
                         />
                         {form.formState.errors.phone && <p className="text-destructive text-xs mt-1">{form.formState.errors.phone.message}</p>}
                       </div>
@@ -334,7 +343,7 @@ export default function Booking() {
                       <div className="mb-6">
                         <p className="text-sm text-muted-foreground mb-1">Service</p>
                         <p className="font-medium text-foreground">{selectedServiceDetails.name}</p>
-                        <p className="text-primary font-bold mt-1">${selectedServiceDetails.price}</p>
+                        <p className="text-primary font-bold mt-1">₹{Number(selectedServiceDetails.price).toLocaleString('en-IN')}</p>
                       </div>
                     )}
                     
@@ -342,15 +351,17 @@ export default function Booking() {
                       <div className="mb-6">
                         <p className="text-sm text-muted-foreground mb-1">Date & Time</p>
                         <p className="font-medium text-foreground">
-                          {format(new Date(selectedDate), 'MMMM do, yyyy')} at {selectedTime}
+                          {format(new Date(selectedDate), 'MMMM do, yyyy')} at {formatTime(selectedTime)}
                         </p>
                       </div>
                     )}
 
+                    <p className="text-center text-sm text-muted-foreground mb-4">🔥 Limited slots available today</p>
+
                     <button 
                       type="submit"
                       disabled={isPending}
-                      className="w-full py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                      className="w-full py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isPending ? "Confirming..." : "Confirm Booking"}
                     </button>

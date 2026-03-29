@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { ArrowRight, Star, Clock, CheckCircle2, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Star, Clock, CheckCircle2, MapPin, Phone, Trophy, Award, ThumbsUp } from "lucide-react";
 import { useGetServices, useSubmitContact } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +37,37 @@ export default function Home() {
   const { data: services, isLoading: servicesLoading } = useGetServices();
   const { toast } = useToast();
   
+  const [selectedModal, setSelectedModal] = useState<typeof services[0] | null>(null);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+
+  const testimonials = [
+    {
+      name: "Priya Sharma",
+      quote: "Best bridal makeup in the city! My wedding look was absolutely stunning. Every detail was perfect. Highly recommend Glow Salon!",
+      stars: 5,
+      initials: "PS"
+    },
+    {
+      name: "Anjali Reddy",
+      quote: "I had my hair spa and facial done here. The staff is so caring and professional. Left feeling like a queen. Will definitely come back!",
+      stars: 5,
+      initials: "AR"
+    },
+    {
+      name: "Sneha Patel",
+      quote: "Got my mehendi done here for Navratri. The design was so intricate and beautiful. The artist was very skilled and patient!",
+      stars: 5,
+      initials: "SP"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [testimonials.length]);
+
   const { mutate: submitContact, isPending: contactPending } = useSubmitContact({
     mutation: {
       onSuccess: () => {
@@ -64,18 +96,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative pb-20 md:pb-0">
       <Navbar />
 
       {/* Hero Section */}
       <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <img 
-            src={`${import.meta.env.BASE_URL}images/hero-bg.png`} 
-            alt="Luxury Salon Interior" 
+            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85" 
+            alt="Luxury Indian Salon Interior" 
             className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -89,11 +121,11 @@ export default function Home() {
               Welcome to Luxury
             </motion.p>
             <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-serif font-bold leading-tight mb-6">
-              Reveal Your <br/>
-              <span className="italic font-light text-secondary">Inner Glow</span>
+              Premium Salon Experience <br/>
+              <span className="italic font-light text-secondary">for Your Perfect Look</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="text-lg md:text-xl text-white/80 mb-10 max-w-lg font-light">
-              Experience personalized beauty treatments in an oasis of elegance and tranquility. Your transformation begins here.
+              Expert hairstyling, bridal makeup, and beauty services tailored for you
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
               <Link 
@@ -109,15 +141,17 @@ export default function Home() {
                 View Services
               </a>
             </motion.div>
+            <motion.div variants={fadeUp}>
+              <div className="mt-8 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-full text-sm">
+                🔥 Limited slots available today
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* Services Section */}
       <section id="services" className="py-24 bg-background relative">
-        <div className="absolute top-0 right-0 w-64 opacity-5 pointer-events-none">
-          <img src={`${import.meta.env.BASE_URL}images/decorative-leaf.png`} alt="Decorative" />
-        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial="hidden"
@@ -142,17 +176,18 @@ export default function Home() {
               {services?.map((service, idx) => (
                 <motion.div
                   key={service.id}
+                  onClick={() => setSelectedModal(service)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="group bg-card p-8 rounded-2xl border border-border/50 shadow-lg shadow-black/5 hover:shadow-xl hover:border-secondary/30 transition-all duration-500 hover:-translate-y-1"
+                  className="group bg-card p-8 rounded-2xl border border-border/50 shadow-lg shadow-black/5 hover:shadow-xl hover:border-secondary/30 transition-all duration-500 hover:-translate-y-1 cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <h4 className="text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">{service.name}</h4>
-                    <span className="text-secondary font-medium">${service.price}</span>
+                    <span className="text-secondary font-medium">₹{Number(service.price).toLocaleString('en-IN')}</span>
                   </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 h-20">
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 h-20 overflow-hidden">
                     {service.description}
                   </p>
                   <div className="flex items-center justify-between border-t border-border pt-4">
@@ -160,9 +195,9 @@ export default function Home() {
                       <Clock className="w-4 h-4 text-primary" />
                       {service.duration} Mins
                     </div>
-                    <Link href={`/booking?service=${service.id}`} className="text-primary hover:text-secondary transition-colors p-2 -mr-2">
+                    <span className="text-primary hover:text-secondary transition-colors p-2 -mr-2">
                       <ArrowRight className="w-5 h-5" />
-                    </Link>
+                    </span>
                   </div>
                 </motion.div>
               ))}
@@ -171,8 +206,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Awards & Trust Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-sm font-bold text-primary uppercase tracking-[0.2em] mb-2">Recognition</p>
+            <h3 className="text-3xl md:text-4xl font-serif font-bold">Awards & Achievements</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {[
+              { icon: Trophy, title: "Best Salon in City", desc: "Awarded by Lifestyle Magazine 2024", color: "text-yellow-500" },
+              { icon: Award, title: "Customer Choice Award", desc: "Voted by 500+ happy customers", color: "text-primary" },
+              { icon: ThumbsUp, title: "Excellence in Bridal", desc: "Top bridal studio in the region", color: "text-secondary" },
+            ].map((award, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
+                className="bg-card rounded-2xl p-8 text-center border border-border shadow-sm hover:shadow-md transition-all">
+                <award.icon className={"w-12 h-12 mx-auto mb-4 " + award.color} />
+                <h4 className="text-xl font-serif font-bold text-foreground mb-2">{award.title}</h4>
+                <p className="text-muted-foreground text-sm">{award.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <p className="text-center text-lg font-medium text-foreground">✨ Trusted by <span className="text-primary font-bold">500+ happy customers</span> across the city</p>
+        </div>
+      </section>
+
       {/* About Section */}
-      <section id="about" className="py-24 bg-muted/30">
+      <section id="about" className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -184,7 +244,7 @@ export default function Home() {
             >
               <div className="absolute inset-0 bg-secondary rounded-full blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/4" />
               <img 
-                src={`${import.meta.env.BASE_URL}images/about-stylist.png`} 
+                src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80" 
                 alt="Expert Stylist" 
                 className="relative z-10 w-full h-auto rounded-3xl shadow-2xl"
               />
@@ -201,20 +261,20 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-sm font-bold text-primary uppercase tracking-[0.2em] mb-3">Our Story</h2>
-              <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">Artistry in Every Detail</h3>
+              <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">Artistry Rooted in Indian Beauty</h3>
               <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                At Glow Salon, we believe beauty is an art form. Founded on the principle that every client deserves a bespoke experience, our sanctuary offers an escape from the ordinary.
+                At Glow Salon, we celebrate the rich tradition of Indian beauty. Founded by experts with over 10 years of experience, our sanctuary blends ancient beauty rituals with modern techniques to highlight your natural radiance.
               </p>
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-                Our master stylists and aestheticians combine passion with cutting-edge techniques to highlight your natural radiance, ensuring you leave feeling confident, refreshed, and truly glowing.
+                From bridal mehendi to luxurious spa treatments, our master stylists and beauticians ensure every client leaves feeling confident, refreshed, and truly glowing.
               </p>
               
               <ul className="space-y-4 mb-10">
                 {[
-                  "Award-winning master stylists",
+                  "Certified bridal makeup artists",
                   "Premium organic beauty products",
-                  "Personalized consultation for every client",
-                  "Luxurious and relaxing atmosphere"
+                  "Expert in traditional & modern styles",
+                  "Personalized consultation for every client"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-foreground font-medium">
                     <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
@@ -235,7 +295,7 @@ export default function Home() {
       </section>
 
       {/* Gallery Section */}
-      <section id="gallery" className="py-24 bg-background">
+      <section id="gallery" className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial="hidden"
@@ -249,20 +309,37 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[250px]">
-            {/* beautiful soft waves hair back view */}
-            <img src="https://pixabay.com/get/g906aaaffd7a26e786a40f5f720ae5976dd64f8a594f74541b88c49c5b44ca1ecaba4152b84f8a83847db372bafdb70c7734fe0f2afe0714d7f96e824623e235c_1280.jpg" alt="Hair styling" className="w-full h-full object-cover rounded-xl col-span-2 row-span-2 hover:opacity-90 transition-opacity cursor-pointer" />
+            <div className="relative rounded-xl col-span-2 row-span-2 overflow-hidden group cursor-pointer shadow-sm">
+              <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80" alt="Indian salon interior" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
+                Customer Favourite
+              </div>
+            </div>
             
-            {/* clean facial aesthetics spa */}
-            <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80" alt="Facial treatment" className="w-full h-full object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer" />
+            <div className="relative rounded-xl overflow-hidden group cursor-pointer shadow-sm">
+              <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=80" alt="Facial treatment" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
+                Top Rated
+              </div>
+            </div>
             
-            {/* elegant nail art manicure */}
-            <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=600&q=80" alt="Manicure" className="w-full h-full object-cover rounded-xl row-span-2 hover:opacity-90 transition-opacity cursor-pointer" />
+            <div className="relative rounded-xl row-span-2 overflow-hidden group cursor-pointer shadow-sm">
+              <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80" alt="Bridal makeup" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
+                Bridal Special
+              </div>
+            </div>
             
-            {/* salon styling tools elegant */}
-            <img src="https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=600&q=80" alt="Salon interior" className="w-full h-full object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer" />
+            <div className="relative rounded-xl overflow-hidden group cursor-pointer shadow-sm">
+              <img src="https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=600&q=80" alt="Hair styling" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            </div>
             
-            {/* smooth elegant bride hair styling */}
-            <img src="https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&q=80" alt="Bridal hair" className="w-full h-full object-cover rounded-xl col-span-2 hover:opacity-90 transition-opacity cursor-pointer" />
+            <div className="relative rounded-xl col-span-2 overflow-hidden group cursor-pointer shadow-sm">
+              <img src="https://images.unsplash.com/photo-1500840216050-6ffa99d75160?w=800&q=80" alt="Bridal traditional" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
+                ⭐ 4.8/5
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -277,12 +354,26 @@ export default function Home() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto"
+            className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            <h3 className="text-3xl md:text-5xl font-serif italic font-light leading-snug mb-10">
-              "An absolute dream. The attention to detail and level of care at Glow is unmatched. I left feeling completely revitalized and beautiful."
-            </h3>
-            <p className="text-secondary font-bold tracking-widest uppercase text-sm">Elena Rodriguez</p>
+            {testimonials.map((testimonial, idx) => (
+              <div key={idx} className="bg-white/5 border border-white/10 p-8 rounded-2xl text-left hover:bg-white/10 transition-colors">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.stars)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
+                  ))}
+                </div>
+                <p className="text-white/80 italic mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                    {testimonial.initials}
+                  </div>
+                  <p className="text-secondary font-bold tracking-wide">{testimonial.name}</p>
+                </div>
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -332,7 +423,7 @@ export default function Home() {
                       <input 
                         {...contactForm.register("phone")}
                         className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+91 98765 43210"
                       />
                     </div>
                   </div>
@@ -366,24 +457,57 @@ export default function Home() {
               transition={{ delay: 0.2 }}
               className="relative rounded-3xl overflow-hidden shadow-2xl h-[500px] lg:h-auto"
             >
-              {/* map beautiful salon location aesthetic */}
               <img 
-                src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80" 
+                src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80" 
                 alt="Salon Location" 
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-foreground/20" />
+              <div className="absolute inset-0 bg-foreground/30" />
               <div className="absolute bottom-8 left-8 right-8 glass-panel p-8 rounded-2xl text-foreground">
                 <h4 className="text-2xl font-serif font-bold mb-4">Visit Us</h4>
-                <p className="flex items-center gap-3 mb-3 text-muted-foreground"><MapPin className="w-5 h-5 text-primary" /> 123 Luxury Avenue, Beverly Hills</p>
-                <p className="flex items-center gap-3 text-muted-foreground"><Phone className="w-5 h-5 text-primary" /> +1 (555) 123-4567</p>
+                <p className="flex items-center gap-3 mb-3 text-muted-foreground"><MapPin className="w-5 h-5 text-primary shrink-0" /> 14, MG Road, Koramangala, Bengaluru, Karnataka 560034</p>
+                <p className="flex items-center gap-3 mb-3 text-muted-foreground"><Phone className="w-5 h-5 text-primary shrink-0" /> +91 98765 43210</p>
+                <p className="flex items-center gap-3 text-muted-foreground"><Clock className="w-5 h-5 text-primary shrink-0" /> Mon-Sat: 10:00 AM – 8:00 PM | Sun: Closed</p>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Service Modal */}
+      <AnimatePresence>
+        {selectedModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setSelectedModal(null)}>
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-card rounded-3xl p-8 max-w-md w-full shadow-2xl border border-border"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-2xl font-serif font-bold text-foreground">{selectedModal.name}</h3>
+                <button onClick={() => setSelectedModal(null)} className="text-muted-foreground hover:text-foreground transition-colors p-1 bg-muted rounded-full w-8 h-8 flex items-center justify-center">✕</button>
+              </div>
+              <div className="text-3xl font-bold text-primary mb-4">₹{Number(selectedModal.price).toLocaleString('en-IN')}</div>
+              <p className="text-muted-foreground font-medium mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-primary"/> Duration: {selectedModal.duration} minutes</p>
+              <p className="text-muted-foreground mb-8 leading-relaxed">{selectedModal.description}</p>
+              <Link href={"/booking?service=" + selectedModal.id} onClick={() => setSelectedModal(null)} className="block w-full py-4 bg-primary text-white text-center font-bold tracking-wide rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                Book This Service
+              </Link>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <Footer />
+
+      {/* Mobile Sticky Book Now Button */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
+        <Link href="/booking" className="block w-full py-4 bg-primary text-white text-center font-bold rounded-xl shadow-2xl shadow-primary/40 text-base tracking-wide">
+          📅 Book Appointment Now
+        </Link>
+      </div>
     </div>
   );
 }
