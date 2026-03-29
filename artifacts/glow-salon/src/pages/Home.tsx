@@ -33,12 +33,35 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
+// Gallery data — real Unsplash salon photos
+const galleryItems = [
+  { id: 1, src: "photo-1562322140-8baeececf3df", alt: "Hair colour highlights", label: "Hair Colour", category: "hair", featured: true },
+  { id: 2, src: "photo-1583939003579-730e3918a45a", alt: "Indian bridal makeup", label: "Bridal Makeup", category: "bridal", featured: false },
+  { id: 3, src: "photo-1570172619644-dfd03ed5d881", alt: "Facial skincare treatment", label: "Facial & Skincare", category: "skin", featured: false },
+  { id: 4, src: "photo-1604654894610-df63bc536371", alt: "Nail art design", label: "Nail Art", category: "nails", featured: false },
+  { id: 5, src: "photo-1544161515-4ab6ce6db874", alt: "Spa wellness treatment", label: "Spa & Wellness", category: "spa", featured: false },
+  { id: 6, src: "photo-1605497788044-5a32c7078486", alt: "Hair blowout and styling", label: "Hair Styling", category: "hair", featured: false },
+  { id: 7, src: "photo-1596755389378-c31d21fd1273", alt: "Skin care facial", label: "Skin Treatment", category: "skin", featured: false },
+  { id: 8, src: "photo-1604902396830-aca29e19b067", alt: "Manicure and nail colour", label: "Manicure", category: "nails", featured: false },
+  { id: 9, src: "photo-1522337233671-de82e3a96c8e", alt: "Hair spa treatment", label: "Hair Spa", category: "hair", featured: false },
+];
+
+const categoryFilters = [
+  { key: "all",    label: "All" },
+  { key: "hair",   label: "Hair" },
+  { key: "bridal", label: "Bridal" },
+  { key: "skin",   label: "Skin Care" },
+  { key: "nails",  label: "Nail Art" },
+  { key: "spa",    label: "Spa" },
+];
+
 export default function Home() {
   const { data: services, isLoading: servicesLoading } = useGetServices();
   const { toast } = useToast();
   
   const [selectedModal, setSelectedModal] = useState<typeof services[0] | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [galleryFilter, setGalleryFilter] = useState("all");
 
   const testimonials = [
     {
@@ -297,50 +320,105 @@ export default function Home() {
       {/* Gallery Section */}
       <section id="gallery" className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-12"
           >
             <h2 className="text-sm font-bold text-primary uppercase tracking-[0.2em] mb-3">Portfolio</h2>
-            <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground">Lookbook</h3>
+            <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-2">Our Lookbook</h3>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+              Real transformations by our expert artists — from everyday glam to unforgettable bridal moments.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[250px]">
-            <div className="relative rounded-xl col-span-2 row-span-2 overflow-hidden group cursor-pointer shadow-sm">
-              <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80" alt="Indian salon interior" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
-                Customer Favourite
-              </div>
-            </div>
-            
-            <div className="relative rounded-xl overflow-hidden group cursor-pointer shadow-sm">
-              <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=80" alt="Facial treatment" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
-                Top Rated
-              </div>
-            </div>
-            
-            <div className="relative rounded-xl row-span-2 overflow-hidden group cursor-pointer shadow-sm">
-              <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80" alt="Bridal makeup" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full text-primary shadow-lg z-10">
-                Bridal Special
-              </div>
-            </div>
-            
-            <div className="relative rounded-xl overflow-hidden group cursor-pointer shadow-sm">
-              <img src="https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=600&q=80" alt="Hair styling" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-            </div>
-            
-            <div className="relative rounded-xl col-span-2 overflow-hidden group cursor-pointer shadow-sm">
-              <img src="https://images.unsplash.com/photo-1500840216050-6ffa99d75160?w=800&q=80" alt="Bridal traditional" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
-                ⭐ 4.8/5
-              </div>
-            </div>
-          </div>
+          {/* Filter Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap justify-center gap-2 mb-10"
+          >
+            {categoryFilters.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setGalleryFilter(f.key)}
+                className={`px-5 py-2 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border ${
+                  galleryFilter === f.key
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                    : "bg-white text-foreground/70 border-border hover:border-primary/40 hover:text-primary"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Gallery Grid */}
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatePresence mode="popLayout">
+              {galleryItems
+                .filter((item) => galleryFilter === "all" || item.category === galleryFilter)
+                .map((item, idx) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.88 }}
+                    transition={{ duration: 0.35, delay: idx * 0.05 }}
+                    className={`relative rounded-2xl overflow-hidden group cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-500 ${
+                      item.featured && galleryFilter === "all" ? "sm:col-span-2 lg:col-span-1 lg:row-span-1" : ""
+                    }`}
+                    style={{ aspectRatio: "4/3" }}
+                  >
+                    {/* Image */}
+                    <img
+                      src={`https://images.unsplash.com/${item.src}?w=700&q=82&fit=crop&crop=entropy`}
+                      alt={item.alt}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    />
+
+                    {/* Gradient overlay — always subtle */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+
+                    {/* Category badge — top left, always visible */}
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="bg-white/90 backdrop-blur-sm text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                        {item.label}
+                      </span>
+                    </div>
+
+                    {/* Hover caption — slides up from bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-out z-10">
+                      <p className="text-white font-semibold text-sm">{item.alt}</p>
+                      <p className="text-white/70 text-xs mt-0.5 flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-secondary text-secondary" /> Glow Salon
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* CTA below gallery */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <p className="text-muted-foreground mb-4">Love what you see? Let us create your perfect look.</p>
+            <Link
+              href="/booking"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white font-medium tracking-wide rounded-full hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
+            >
+              Book Your Session <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
