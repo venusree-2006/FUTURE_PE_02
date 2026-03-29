@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Glow Salon"
+version = "1.0.0"
+id = "artifacts/glow-salon"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18243
+
+[services.development]
+run = "pnpm --filter @workspace/glow-salon run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/glow-salon", "run", "build" ]
+publicDir = "artifacts/glow-salon/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18243"
+BASE_PATH = "/"
