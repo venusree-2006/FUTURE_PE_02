@@ -39,7 +39,6 @@ const galleryItems = [
   { id: 2, src: "photo-1583939003579-730e3918a45a", alt: "Indian bridal makeup", label: "Bridal Makeup", category: "bridal", featured: false },
   { id: 3, src: "photo-1570172619644-dfd03ed5d881", alt: "Facial skincare treatment", label: "Facial & Skincare", category: "skin", featured: false },
   { id: 4, src: "photo-1604654894610-df63bc536371", alt: "Nail art design", label: "Nail Art", category: "nails", featured: false },
-  { id: 5, src: "photo-1544161515-4ab6ce6db874", alt: "Spa wellness treatment", label: "Spa & Wellness", category: "spa", featured: false },
   { id: 6, src: "photo-1605497788044-5a32c7078486", alt: "Hair blowout and styling", label: "Hair Styling", category: "hair", featured: false },
   { id: 7, src: "photo-1596755389378-c31d21fd1273", alt: "Skin care facial", label: "Skin Treatment", category: "skin", featured: false },
   { id: 8, src: "photo-1604902396830-aca29e19b067", alt: "Manicure and nail colour", label: "Manicure", category: "nails", featured: false },
@@ -52,7 +51,6 @@ const categoryFilters = [
   { key: "bridal", label: "Bridal" },
   { key: "skin",   label: "Skin Care" },
   { key: "nails",  label: "Nail Art" },
-  { key: "spa",    label: "Spa" },
 ];
 
 export default function Home() {
