@@ -57,7 +57,6 @@ export default function Home() {
   const { data: services, isLoading: servicesLoading } = useGetServices();
   const { toast } = useToast();
   
-  const [selectedModal, setSelectedModal] = useState<typeof services[0] | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [galleryFilter, setGalleryFilter] = useState("all");
 
@@ -195,32 +194,62 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services?.map((service, idx) => (
-                <motion.div
-                  key={service.id}
-                  onClick={() => setSelectedModal(service)}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group bg-card p-8 rounded-2xl border border-border/50 shadow-lg shadow-black/5 hover:shadow-xl hover:border-secondary/30 transition-all duration-500 hover:-translate-y-1 cursor-pointer"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <h4 className="text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">{service.name}</h4>
-                    <span className="text-secondary font-medium">₹{Number(service.price).toLocaleString('en-IN')}</span>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 h-20 overflow-hidden">
-                    {service.description}
-                  </p>
-                  <div className="flex items-center justify-between border-t border-border pt-4">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                      <Clock className="w-4 h-4 text-primary" />
-                      {service.duration} Mins
+                <Link key={service.id} href={`/booking?service=${service.id}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.08 }}
+                    whileHover={{ y: -10, transition: { duration: 0.22, ease: "easeOut" } }}
+                    whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
+                    className="group relative bg-card p-8 rounded-2xl border border-border/50 shadow-md overflow-hidden cursor-pointer select-none"
+                    style={{ boxShadow: "0 4px 20px -4px rgba(0,0,0,0.07)" }}
+                  >
+                    {/* Glow gradient on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/8 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none" />
+
+                    {/* Top border accent on hover */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary via-primary to-secondary scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left" />
+
+                    <div className="flex justify-between items-start mb-4">
+                      <h4 className="text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+                        {service.name}
+                      </h4>
+                      <span className="text-secondary font-bold text-lg tabular-nums">
+                        ₹{Number(service.price).toLocaleString('en-IN')}
+                      </span>
                     </div>
-                    <span className="text-primary hover:text-secondary transition-colors p-2 -mr-2">
-                      <ArrowRight className="w-5 h-5" />
-                    </span>
-                  </div>
-                </motion.div>
+
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6 h-20 overflow-hidden">
+                      {service.description}
+                    </p>
+
+                    <div className="flex items-center justify-between border-t border-border pt-4 transition-colors duration-200">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                        <Clock className="w-4 h-4 text-primary" />
+                        {service.duration} Mins
+                      </div>
+                      {/* Arrow + "Book Now" reveal */}
+                      <div className="flex items-center gap-1.5 text-primary font-semibold text-sm">
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs uppercase tracking-wider">
+                          Book Now
+                        </span>
+                        <motion.span
+                          animate={{ x: 0 }}
+                          whileHover={{ x: 3 }}
+                          className="text-primary group-hover:text-secondary transition-colors duration-200"
+                        >
+                          <ArrowRight className="w-5 h-5" />
+                        </motion.span>
+                      </div>
+                    </div>
+
+                    {/* Bottom "Book This Service" bar slides up on hover */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-primary text-white text-sm font-semibold text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out tracking-wide">
+                      Book This Service →
+                    </div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           )}
@@ -567,32 +596,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Service Modal */}
-      <AnimatePresence>
-        {selectedModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setSelectedModal(null)}>
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card rounded-3xl p-8 max-w-md w-full shadow-2xl border border-border"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-serif font-bold text-foreground">{selectedModal.name}</h3>
-                <button onClick={() => setSelectedModal(null)} className="text-muted-foreground hover:text-foreground transition-colors p-1 bg-muted rounded-full w-8 h-8 flex items-center justify-center">✕</button>
-              </div>
-              <div className="text-3xl font-bold text-primary mb-4">₹{Number(selectedModal.price).toLocaleString('en-IN')}</div>
-              <p className="text-muted-foreground font-medium mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-primary"/> Duration: {selectedModal.duration} minutes</p>
-              <p className="text-muted-foreground mb-8 leading-relaxed">{selectedModal.description}</p>
-              <Link href={"/booking?service=" + selectedModal.id} onClick={() => setSelectedModal(null)} className="block w-full py-4 bg-primary text-white text-center font-bold tracking-wide rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-                Book This Service
-              </Link>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <Footer />
 

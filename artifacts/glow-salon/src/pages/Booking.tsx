@@ -62,6 +62,20 @@ export default function Booking() {
 
   const selectedServiceDetails = services?.find(s => s.id === selectedServiceId);
 
+  // Auto-advance to step 2 when arriving from a service card with pre-selected service
+  useEffect(() => {
+    if (initialServiceId && services && services.length > 0) {
+      const id = parseInt(initialServiceId);
+      const exists = services.find(s => s.id === id);
+      if (exists) {
+        form.setValue("serviceId", id);
+        // Small delay so the user sees the highlighted service before advancing
+        const t = setTimeout(() => setStep(2), 600);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [initialServiceId, services]);
+
   const onSubmit = (data: BookingFormData) => {
     createBooking({ data });
   };
@@ -127,27 +141,48 @@ export default function Booking() {
                     {[1,2,3].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {services?.map(service => (
-                      <div 
-                        key={service.id}
-                        onClick={() => form.setValue("serviceId", service.id)}
-                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 flex justify-between items-center ${
-                          selectedServiceId === service.id 
-                            ? "border-primary bg-primary/5 shadow-md" 
-                            : "border-border hover:border-primary/50"
-                        }`}
-                      >
-                        <div>
-                          <h3 className="font-serif font-bold text-xl text-foreground mb-1">{service.name}</h3>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {service.duration} mins</span>
-                            <span className="capitalize">{service.category}</span>
+                  <div className="space-y-3">
+                    {services?.map(service => {
+                      const isSelected = selectedServiceId === service.id;
+                      const isPreSelected = initialServiceId && parseInt(initialServiceId) === service.id;
+                      return (
+                        <motion.div
+                          key={service.id}
+                          onClick={() => form.setValue("serviceId", service.id)}
+                          whileHover={{ x: 3 }}
+                          whileTap={{ scale: 0.99 }}
+                          animate={isPreSelected && isSelected
+                            ? { boxShadow: ["0 0 0 0 rgba(var(--primary-rgb,168,50,80),0)", "0 0 0 6px rgba(var(--primary-rgb,168,50,80),0.12)", "0 0 0 0 rgba(var(--primary-rgb,168,50,80),0)"] }
+                            : {}}
+                          transition={{ duration: 0.8, repeat: isPreSelected && isSelected ? 2 : 0 }}
+                          className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 flex justify-between items-center group ${
+                            isSelected
+                              ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                              : "border-border hover:border-primary/40 hover:bg-muted/40"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors duration-200 ${
+                              isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 group-hover:border-primary/50"
+                            }`}>
+                              {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
+                            </div>
+                            <div>
+                              <h3 className={`font-serif font-bold text-lg transition-colors duration-200 ${isSelected ? "text-primary" : "text-foreground"}`}>
+                                {service.name}
+                              </h3>
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground mt-0.5">
+                                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {service.duration} mins</span>
+                                <span className="capitalize px-2 py-0.5 bg-muted rounded-full text-xs">{service.category}</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-xl font-medium text-primary">₹{Number(service.price).toLocaleString('en-IN')}</div>
-                      </div>
-                    ))}
+                          <div className={`text-lg font-bold tabular-nums transition-colors duration-200 ${isSelected ? "text-primary" : "text-secondary"}`}>
+                            ₹{Number(service.price).toLocaleString('en-IN')}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                     {form.formState.errors.serviceId && (
                       <p className="text-destructive text-sm mt-2">{form.formState.errors.serviceId.message}</p>
                     )}
