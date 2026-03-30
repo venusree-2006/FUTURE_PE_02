@@ -189,14 +189,16 @@ export default function Booking() {
                   </div>
                 )}
                 <div className="mt-10 flex justify-end">
-                  <button 
+                  <motion.button
                     type="button"
                     disabled={!selectedServiceId}
                     onClick={() => setStep(2)}
-                    className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={selectedServiceId ? { scale: 1.04, transition: { duration: 0.18 } } : {}}
+                    whileTap={selectedServiceId ? { scale: 0.95, transition: { duration: 0.1 } } : {}}
+                    className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Continue to Date & Time
-                  </button>
+                    Continue to Date &amp; Time →
+                  </motion.button>
                 </div>
               </motion.div>
             )}
@@ -365,13 +367,15 @@ export default function Booking() {
 
                     <p className="text-center text-sm text-muted-foreground mb-4">🔥 Limited slots available today</p>
 
-                    <button 
+                    <motion.button
                       type="submit"
                       disabled={isPending}
-                      className="w-full py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={!isPending ? { scale: 1.04, transition: { duration: 0.18 } } : {}}
+                      whileTap={!isPending ? { scale: 0.95, transition: { duration: 0.1 } } : {}}
+                      className="w-full py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isPending ? "Confirming..." : "Confirm Booking"}
-                    </button>
+                      {isPending ? "Confirming..." : "✓ Confirm Booking"}
+                    </motion.button>
                   </div>
                 </div>
               </motion.div>

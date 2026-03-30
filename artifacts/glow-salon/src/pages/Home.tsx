@@ -148,18 +148,28 @@ export default function Home() {
               Expert hairstyling, bridal makeup, and beauty services tailored for you
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
-              <Link 
-                href="/booking"
-                className="px-8 py-4 bg-primary text-white tracking-wider uppercase text-sm font-medium rounded-sm hover:bg-white hover:text-primary transition-all duration-300 text-center"
+              <motion.div
+                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
               >
-                Book Appointment
-              </Link>
-              <a 
-                href="#services"
-                className="px-8 py-4 bg-transparent border border-white/30 text-white tracking-wider uppercase text-sm font-medium rounded-sm hover:bg-white/10 transition-all duration-300 text-center"
+                <Link
+                  href="/booking"
+                  className="block px-8 py-4 bg-primary text-white tracking-wider uppercase text-sm font-medium rounded-sm hover:bg-white hover:text-primary transition-colors duration-300 text-center shadow-lg shadow-primary/30"
+                >
+                  Book Appointment
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
               >
-                View Services
-              </a>
+                <a
+                  href="#services"
+                  className="block px-8 py-4 bg-transparent border border-white/30 text-white tracking-wider uppercase text-sm font-medium rounded-sm hover:bg-white/15 transition-colors duration-300 text-center"
+                >
+                  View Services
+                </a>
+              </motion.div>
             </motion.div>
             <motion.div variants={fadeUp}>
               <div className="mt-8 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-full text-sm">
@@ -200,9 +210,14 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.08 }}
-                    whileHover={{ y: -10, transition: { duration: 0.22, ease: "easeOut" } }}
+                    whileHover={{
+                      y: -10,
+                      scale: 1.04,
+                      boxShadow: "0 24px 48px -8px rgba(0,0,0,0.16), 0 0 0 1px hsl(38 75% 52% / 0.18)",
+                      transition: { duration: 0.25, ease: "easeOut" }
+                    }}
                     whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
-                    className="group relative bg-card p-8 rounded-2xl border border-border/50 shadow-md overflow-hidden cursor-pointer select-none"
+                    className="group relative bg-card p-8 rounded-2xl border border-border/50 overflow-hidden cursor-pointer select-none"
                     style={{ boxShadow: "0 4px 20px -4px rgba(0,0,0,0.07)" }}
                   >
                     {/* Glow gradient on hover */}
@@ -439,12 +454,18 @@ export default function Home() {
             className="text-center mt-12"
           >
             <p className="text-muted-foreground mb-4">Love what you see? Let us create your perfect look.</p>
-            <Link
-              href="/booking"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white font-medium tracking-wide rounded-full hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
+            <motion.div
+              whileHover={{ scale: 1.06, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+              className="inline-block"
             >
-              Book Your Session <ArrowRight className="w-4 h-4" />
-            </Link>
+              <Link
+                href="/booking"
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white font-medium tracking-wide rounded-full hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 transition-colors duration-300"
+              >
+                Book Your Session <ArrowRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -544,13 +565,15 @@ export default function Home() {
                       <p className="text-destructive text-xs mt-1">{contactForm.formState.errors.message.message}</p>
                     )}
                   </div>
-                  <button 
+                  <motion.button
                     type="submit"
                     disabled={contactPending}
-                    className="w-full py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                    whileHover={!contactPending ? { scale: 1.03, transition: { duration: 0.18 } } : {}}
+                    whileTap={!contactPending ? { scale: 0.96, transition: { duration: 0.1 } } : {}}
+                    className="w-full py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {contactPending ? "Sending..." : "Send Message"}
-                  </button>
+                  </motion.button>
                 </form>
               </div>
             </motion.div>
