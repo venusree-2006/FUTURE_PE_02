@@ -1,6 +1,7 @@
 
 
-# **Glow Salon Charm – Prompt Engineering Project (Task 3)**
+# **Glow Salon Charm **
+#**Prompt Engineering Project (Task 3)**
 
 ## **1. Business Overview**
 
